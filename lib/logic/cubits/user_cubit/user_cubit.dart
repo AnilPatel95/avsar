@@ -1,8 +1,11 @@
-import 'package:ecommerce/data/models/user/user_model.dart';
-import 'package:ecommerce/data/repositories/user_repository.dart';
-import 'package:ecommerce/logic/cubits/user_cubit/user_state.dart';
-import 'package:ecommerce/logic/services/preferences.dart';
+import 'package:avsar/data/models/user/user_model.dart';
+import 'package:avsar/data/repositories/user_repository.dart';
+import 'package:avsar/logic/cubits/user_cubit/user_state.dart';
+import 'package:avsar/logic/services/preferences.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../data/models/user/register_model.dart';
 
 class UserCubit extends Cubit<UserState> {
   UserCubit() : super( UserInitialState() ) {
@@ -29,6 +32,10 @@ class UserCubit extends Cubit<UserState> {
     required String password
   }) async {
     await Preferences.saveUserDetails(email, password);
+    final data = userModel.data;
+    if(data !=null){
+      await Preferences.saveToken(data.token.toString(), data.refreshToken.toString());
+    }
     emit( UserLoggedInState(userModel) );
   }
 
@@ -38,7 +45,7 @@ class UserCubit extends Cubit<UserState> {
   }) async {
     emit( UserLoadingState() );
     try {
-      UserModel userModel = await _userRepository.signIn(email: email, password: password);
+      UserModel userModel = await _userRepository.signIn(email: email, pin: password);
       _emitLoggedInState(userModel: userModel, email: email, password: password);
     }
     catch(ex) {
@@ -47,31 +54,35 @@ class UserCubit extends Cubit<UserState> {
   }
 
   void createAccount({
-    required String email,
-    required String password
+    required String id,
+    required String userEmail,
+    required String userFriendlyName,
+    required String userPin
   }) async {
     emit( UserLoadingState() );
     try {
-      UserModel userModel = await _userRepository.createAccount(email: email, password: password);
-      _emitLoggedInState(userModel: userModel, email: email, password: password);
+      RegisterModel registrationModel = await _userRepository.createAccount(
+          id: id,
+          userEmail: userEmail,
+          userFriendlyName: userFriendlyName,
+          userPin: userPin);
+      _emitRegistrationInState(registrationModel: registrationModel, email: userEmail, password: userPin);
     }
     catch(ex) {
       emit( UserErrorState(ex.toString()) );
     }
   }
 
-  Future<bool> updateUser(UserModel userModel) async {
-    emit( UserLoadingState() );
-    try {
-      UserModel updatedUser = await _userRepository.updateUser(userModel);
-      emit( UserLoggedInState(updatedUser) );
-      return true;
-    }
-    catch(ex) {
-      emit( UserErrorState(ex.toString()) );
-      return false;
-    }
+  void _emitRegistrationInState({
+    required RegisterModel registrationModel,
+    required String email,
+    required String password
+  }) async {
+    await Preferences.saveUserDetails(email, password);
+    final data = registrationModel.data;
+    emit( UserRegistrationInState(registrationModel) );
   }
+
 
   void signOut() async {
     await Preferences.clear();

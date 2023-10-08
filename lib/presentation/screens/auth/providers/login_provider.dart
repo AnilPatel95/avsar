@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:ecommerce/logic/cubits/user_cubit/user_cubit.dart';
-import 'package:ecommerce/logic/cubits/user_cubit/user_state.dart';
+import 'package:avsar/logic/cubits/user_cubit/user_cubit.dart';
+import 'package:avsar/logic/cubits/user_cubit/user_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,6 +11,7 @@ class LoginProvider with ChangeNotifier {
   }
 
   bool isLoading = false;
+  bool _isPasswordVisible = false;
   String error = "";
 
   final emailController = TextEditingController();
@@ -23,6 +24,7 @@ class LoginProvider with ChangeNotifier {
       if(userState is UserLoadingState) {
         isLoading = true;
         error = "";
+
         notifyListeners();
       }
       else if(userState is UserErrorState) {
@@ -45,6 +47,13 @@ class LoginProvider with ChangeNotifier {
     String password = passwordController.text.trim();
     
     BlocProvider.of<UserCubit>(context).signIn(email: email, password: password);
+  }
+
+  bool get isPasswordVisible => _isPasswordVisible;
+
+  void togglePasswordVisibility(){
+    _isPasswordVisible = !_isPasswordVisible;
+    notifyListeners();
   }
 
   @override

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class CommonSnackBar {
+class CommonWidget {
   static void showSnackBar(BuildContext context, String message) {
     final snackBar = SnackBar(
       content: Text(message),
@@ -9,4 +9,19 @@ class CommonSnackBar {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
+
+  static buildShowDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        barrierColor: Colors.white.withOpacity(0.01),
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+            ),
+          );
+        });
+  }
+
 }

@@ -1,11 +1,14 @@
+import 'package:avsar/core/constants.dart';
+import 'package:avsar/logic/services/preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-
+import 'package:avsar/logic/services/preferences.dart';
 import '../logic/services/connectivity.dart';
 
 const String BASE_URL = "https://avsar.azurewebsites.net/api";
 const Map<String, dynamic> DEFAULT_HEADERS = {
-  "Content-Type": "application/json"
+  "Content-Type": "application/json",
+  "Authorization" :'Bearer'
 };
 
 class Api {
@@ -25,13 +28,13 @@ class Api {
     try{
       final isConnected = await isInternetConnected();
       if(!isConnected){
-        throw 'No internet connection';
+        throw Constants.NO_INTERNET;
       }
       final response = await _dio.post(apiEndPoint,data: data);
       return response;
     } on DioException catch(ex) {
         if(ex.response != null && (ex.response!.statusCode ==401 || ex.response!.statusCode == 500)  ){
-          throw 'oops!! something wrong';
+          throw Constants.API_ERROR_MESSAGE;
         }
       rethrow;
     }
@@ -41,12 +44,12 @@ class Api {
     try{
       final isConnected = await isInternetConnected();
       if(!isConnected){
-        throw 'No internet connection';
+        throw Constants.NO_INTERNET;
       }
       final response = await _dio.get(apiEndPoint);
       return response;
     }catch(ex) {
-      throw 'oops!! something wrong';
+      throw Constants.API_ERROR_MESSAGE;
     }
   }
 
@@ -62,8 +65,11 @@ class ApiResponse {
   factory ApiResponse.fromResponse(Response response) {
     final data = response.data as Map<String, dynamic>;
     return ApiResponse(
-        success: data["responseStatus"],
-        data: data["data"],
-        message: data["responseMessage"] ?? "Unexpected error");
+        success: data[SUCCESS],
+        data: data[DATA],
+        message: data[MESSAGE] ?? "Unexpected error");
   }
+  static const String SUCCESS = "responseStatus";
+  static const String DATA = "data";
+  static const String MESSAGE = "responseMessage";
 }

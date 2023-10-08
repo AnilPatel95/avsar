@@ -1,5 +1,6 @@
-import 'package:ecommerce/core/ui.dart';
+import 'package:avsar/core/ui.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:avsar/core/ui.dart';
 
 class LinkButton extends StatelessWidget {
   final String text;
@@ -18,9 +19,7 @@ class LinkButton extends StatelessWidget {
     return CupertinoButton(
       onPressed: onPressed,
       padding: EdgeInsets.zero,
-      child: Text(text, style: TextStyle(
-        color: color ?? AppColors.accent
-      ),),
+      child: Text(text, style:TextStyles.body3),
     );
   }
 }

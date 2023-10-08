@@ -1,4 +1,4 @@
-import 'package:ecommerce/core/ui.dart';
+import 'package:avsar/core/ui.dart';
 import 'package:flutter/cupertino.dart';
 
 class PrimaryButton extends StatelessWidget {
@@ -19,7 +19,7 @@ class PrimaryButton extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       child: CupertinoButton(
         onPressed: onPressed,
-        color: color ?? AppColors.accent,
+        color: color ?? AppColors.buttonColor,
         child: Text(text),
       ),
     );

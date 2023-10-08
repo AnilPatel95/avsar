@@ -7,6 +7,7 @@ class PrimaryTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final String? initialValue;
   final Function(String)? onChanged;
+  final Icon prefixIcon;
 
   const PrimaryTextField({
     super.key,
@@ -15,7 +16,8 @@ class PrimaryTextField extends StatelessWidget {
     this.obscureText = false,
     this.validator,
     this.initialValue,
-    this.onChanged
+    this.onChanged,
+    required this.prefixIcon,
   });
 
   @override
@@ -30,7 +32,16 @@ class PrimaryTextField extends StatelessWidget {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(7)
         ),
-        labelText: labelText
+        focusedBorder:const OutlineInputBorder(
+            borderSide: BorderSide(
+              color:Colors.black,
+              width:1.0,
+            )
+        ),
+        hintText: labelText,
+        prefixIcon: prefixIcon,
+        filled: true,
+        fillColor: Colors.grey[200]
       ),
     );
   }

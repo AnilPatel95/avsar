@@ -1,80 +1,70 @@
 import 'dart:convert';
-
+import 'package:avsar/core/api.dart';
+import 'package:avsar/data/models/user/user_model.dart';
 import 'package:dio/dio.dart';
-import 'package:ecommerce/core/api.dart';
-import 'package:ecommerce/data/models/user/user_model.dart';
+
+import '../models/user/register_model.dart';
 
 class UserRepository {
   final _api = Api();
 
-  Future<UserModel> createAccount({
-    required String email,
-    required String password
+  Future<RegisterModel> createAccount({
+    required String id,
+    required String userEmail,
+    required String userFriendlyName,
+    required String userPin
   }) async {
     try {
-      Response response = await _api.sendRequest.post(
-        "/user/createAccount",
+      Response response = await _api.postData(
+        "/UserMaster/Register",
         data: jsonEncode({
-          "email": email,
-          "password": password 
+          "id": id,
+          "userEmail": userEmail,
+          "userFriendlyName": userFriendlyName,
+          "userPin": userPin,
+          "pinSalt": "",
+          "lastLoginDateTime": "2023-09-18T23:02:27.016Z",
+          "createdDateTime": "2023-09-18T23:02:27.016Z",
         })
       );
 
       ApiResponse apiResponse = ApiResponse.fromResponse(response);
 
-      if(!apiResponse.success) {
+      if(apiResponse.success!="Success") {
         throw apiResponse.message.toString();
       }
 
-      return UserModel.fromJson(apiResponse.data);
+      return RegisterModel.fromJson(apiResponse.data);
     }
     catch(ex) {
       rethrow;
+     // throw 'oops!! something wrong';
     }
   }
 
   Future<UserModel> signIn({
     required String email,
-    required String password
+    required String pin
   }) async {
     try {
-      Response response = await _api.sendRequest.post(
-        "/user/signIn",
+      Response response = await _api.postData(
+        "/UserMaster/Login",
         data: jsonEncode({
-          "email": email,
-          "password": password 
+          "userEmail": email,
+          "userPin": pin
         })
       );
 
       ApiResponse apiResponse = ApiResponse.fromResponse(response);
 
-      if(!apiResponse.success) {
+      if(apiResponse.success!="Success") {
         throw apiResponse.message.toString();
       }
 
       return UserModel.fromJson(apiResponse.data);
     }
     catch(ex) {
-      rethrow;
-    }
-  }
-
-  Future<UserModel> updateUser(UserModel userModel) async {
-    try {
-      Response response = await _api.sendRequest.put(
-        "/user/${userModel.sId}",
-        data: jsonEncode(userModel.toJson())
-      );
-
-      ApiResponse apiResponse = ApiResponse.fromResponse(response);
-
-      if(!apiResponse.success) {
-        throw apiResponse.message.toString();
-      }
-
-      return UserModel.fromJson(apiResponse.data);
-    }
-    catch(ex) {
+      //throw 'oops!! something wrong';
       rethrow;
     }
   }
